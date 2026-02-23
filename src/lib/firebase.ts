@@ -15,7 +15,7 @@ const firebaseConfig = {
 };
 
 // Validate config
-const isConfigValid = firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY";
+const isConfigValid = firebaseConfig.apiKey && firebaseConfig.apiKey !== "AIzaSyCjP81uy-yFQXZ2ROfcMGh12IibIl9dLHk";
 
 if (!isConfigValid) {
   console.warn("Firebase configuration is missing or invalid. Please set the VITE_FIREBASE_* environment variables in AI Studio Secrets.");
