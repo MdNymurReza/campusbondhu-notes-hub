@@ -29,10 +29,10 @@ export default function Navbar() {
               <Upload className="w-4 h-4" />
               <span>নোট আপলোড</span>
             </Link>
-            {/* <Link to="/admin" className="flex items-center space-x-1 hover:text-emerald-600 transition-colors">
+            <Link to="/admin" className="flex items-center space-x-1 hover:text-emerald-600 transition-colors">
               <ShieldCheck className="w-4 h-4" />
-              <span>অ্যাডমিন</span>
-            </Link> */}
+              <span> </span>
+            </Link>
             
             {user ? (
               <Link to="/profile" className="flex items-center space-x-2 p-1.5 pr-4 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all group">
