@@ -27,7 +27,7 @@ export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
 
   // Cloudinary কনফিগারেশন
-  const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dhfqa6coe';
+  const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'ASBTO';
   const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'notes_preset';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

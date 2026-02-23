@@ -30,8 +30,8 @@ export default function Navbar() {
               <span>নোট আপলোড</span>
             </Link>
             <Link to="/admin" className="flex items-center space-x-1 hover:text-emerald-600 transition-colors">
-              <ShieldCheck className="w-4 h-4" />
-              <span> </span>
+              {/* <ShieldCheck className="w-4 h-4" />
+              <span></span> */}
             </Link>
             
             {user ? (

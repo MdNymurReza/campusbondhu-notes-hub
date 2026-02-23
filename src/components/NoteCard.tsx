@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Download, User, Calendar, Tag, Play, Star, MessageSquare, Heart } from 'lucide-react';
+import { FileText, Download, User, Calendar, Tag, Play, Star, MessageSquare, Heart, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Note } from '../types';
 import { db } from '../lib/firebase';
-import { doc, updateDoc, increment, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, increment, arrayUnion, arrayRemove, getDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import VideoModal from './VideoModal';
 import NoteDetailModal from './NoteDetailModal';
@@ -30,6 +30,22 @@ const NoteCard: React.FC<Props> = ({ note }) => {
     };
     checkBookmark();
   }, [user, note.id]);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user || user.uid !== note.userId) return;
+    
+    if (window.confirm('আপনি কি নিশ্চিত যে আপনি এই নোটটি মুছে ফেলতে চান?')) {
+      try {
+        await deleteDoc(doc(db, 'notes', note.id));
+        alert('নোটটি সফলভাবে মুছে ফেলা হয়েছে।');
+        window.location.reload();
+      } catch (error) {
+        console.error("Error deleting note:", error);
+        alert('নোটটি মুছতে সমস্যা হয়েছে।');
+      }
+    }
+  };
 
   const toggleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -142,6 +158,16 @@ const NoteCard: React.FC<Props> = ({ note }) => {
           >
             <Heart className={`w-4 h-4 ${isBookmarked ? 'fill-white' : ''}`} />
           </button>
+
+          {user && user.uid === note.userId && (
+            <button 
+              onClick={handleDelete}
+              className="absolute top-16 right-4 p-2 rounded-xl bg-white/90 dark:bg-slate-900/90 text-slate-400 hover:text-red-500 backdrop-blur-md shadow-lg transition-all active:scale-90"
+              title="মুছে ফেলুন"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         <div className="p-6 flex flex-col flex-grow">

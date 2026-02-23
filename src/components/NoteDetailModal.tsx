@@ -10,7 +10,8 @@ import {
   Download, 
   Play,
   FileText,
-  ThumbsUp
+  ThumbsUp,
+  Trash2
 } from 'lucide-react';
 import { Note } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -24,7 +25,8 @@ import {
   serverTimestamp,
   doc,
   updateDoc,
-  increment
+  increment,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -102,6 +104,17 @@ export default function NoteDetailModal({ isOpen, onClose, note }: Props) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('আপনি কি এই নোট মুছে ফেলতে নিশ্চিত?')) return;
+    
+    try {
+      await deleteDoc(doc(db, 'notes', note.id));
+      onClose();
+    } catch (error) {
+      console.error("Error deleting note:", error);
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -131,9 +144,20 @@ export default function NoteDetailModal({ isOpen, onClose, note }: Props) {
                   <p className="text-xs text-slate-500">{note.courseCode} • {note.semester}ম সেমিস্টার</p>
                 </div>
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex items-center gap-2">
+                {user && user.uid === note.userId && (
+                  <button 
+                    onClick={handleDelete}
+                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all"
+                    title="মুছে ফেলুন"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                )}
+                <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
 
             <div className="flex-grow overflow-y-auto p-8">
