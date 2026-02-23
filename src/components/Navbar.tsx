@@ -72,7 +72,7 @@ export default function Navbar() {
           <Link to="/" onClick={() => setIsOpen(false)} className="block py-2">হোম</Link>
           <Link to="/about" onClick={() => setIsOpen(false)} className="block py-2">আমাদের সম্পর্কে</Link>
           <Link to="/upload" onClick={() => setIsOpen(false)} className="block py-2">নোট আপলোড</Link>
-          <Link to="/admin" onClick={() => setIsOpen(false)} className="block py-2">অ্যাডমিন প্যানেল</Link>
+          {/* <Link to="/admin" onClick={() => setIsOpen(false)} className="block py-2">অ্যাডমিন প্যানেল</Link> */}
           {user ? (
             <Link to="/profile" onClick={() => setIsOpen(false)} className="block py-2 font-bold text-emerald-600">আমার প্রোফাইল</Link>
           ) : (
