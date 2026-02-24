@@ -13,7 +13,7 @@ interface Props {
 }
 
 const NoteCard: React.FC<Props> = ({ note }) => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -33,7 +33,7 @@ const NoteCard: React.FC<Props> = ({ note }) => {
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!user || user.uid !== note.userId) return;
+    if (!isAdmin && (!user || user.uid !== note.userId)) return;
     
     if (window.confirm('আপনি কি নিশ্চিত যে আপনি এই নোটটি মুছে ফেলতে চান?')) {
       try {
@@ -159,7 +159,7 @@ const NoteCard: React.FC<Props> = ({ note }) => {
             <Heart className={`w-4 h-4 ${isBookmarked ? 'fill-white' : ''}`} />
           </button>
 
-          {user && user.uid === note.userId && (
+          {(isAdmin || (user && user.uid === note.userId)) && (
             <button 
               onClick={handleDelete}
               className="absolute top-16 right-4 p-2 rounded-xl bg-white/90 dark:bg-slate-900/90 text-slate-400 hover:text-red-500 backdrop-blur-md shadow-lg transition-all active:scale-90"

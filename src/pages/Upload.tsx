@@ -4,11 +4,11 @@ import { motion } from 'motion/react';
 import axios from 'axios';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { BANGLA_SEMESTERS, DEPARTMENTS } from '../lib/utils';
+import { DEPARTMENTS } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
 export default function Upload() {
-  const { user } = useAuth();
+  const { user, loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -24,10 +24,17 @@ export default function Upload() {
     tags: '',
     videoURL: ''
   });
+
+  // Update uploadedBy when user changes
+  React.useEffect(() => {
+    if (user && !formData.uploadedBy) {
+      setFormData(prev => ({ ...prev, uploadedBy: user.displayName || '' }));
+    }
+  }, [user]);
   const [file, setFile] = useState<File | null>(null);
 
   // Cloudinary কনফিগারেশন
-  const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'ASBTO';
+  const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dhfqa6coe';
   const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'notes_preset';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,6 +125,30 @@ export default function Upload() {
       setLoading(false);
     }
   };
+
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white dark:bg-slate-900 p-12 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800"
+        >
+          <AlertCircle className="w-20 h-20 text-amber-500 mx-auto mb-6" />
+          <h2 className="text-3xl font-bold mb-4">লগইন প্রয়োজন</h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-8">
+            নোট আপলোড করতে দয়া করে আপনার গুগল অ্যাকাউন্ট দিয়ে লগইন করুন।
+          </p>
+          <button
+            onClick={loginWithGoogle}
+            className="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors"
+          >
+            লগইন করুন
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (success) {
     return (
@@ -219,8 +250,8 @@ export default function Upload() {
               onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
               className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none"
             >
-              {BANGLA_SEMESTERS.map((semester, index) => (
-                <option key={index + 1} value={index + 1}>{semester}</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                <option key={s} value={s}>{s}ম সেমিস্টার</option>
               ))}
             </select>
           </div>

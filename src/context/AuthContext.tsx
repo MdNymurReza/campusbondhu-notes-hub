@@ -9,9 +9,21 @@ import {
 import { auth, db } from '../lib/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
+interface UserProfile {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  role: 'student' | 'admin';
+  bookmarks: string[];
+  createdAt: any;
+}
+
 interface AuthContextType {
   user: User | null;
+  profile: UserProfile | null;
   loading: boolean;
+  isAdmin: boolean;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -20,26 +32,32 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // Create or update user profile in Firestore
         const userRef = doc(db, 'users', currentUser.uid);
-        const userSnap = await getDoc(userRef);
+        let userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
-          await setDoc(userRef, {
+          const newProfile = {
             uid: currentUser.uid,
             displayName: currentUser.displayName,
             email: currentUser.email,
             photoURL: currentUser.photoURL,
-            role: 'student',
+            role: 'student' as const,
             bookmarks: [],
             createdAt: serverTimestamp(),
-          });
+          };
+          await setDoc(userRef, newProfile);
+          setProfile(newProfile as UserProfile);
+        } else {
+          setProfile(userSnap.data() as UserProfile);
         }
+      } else {
+        setProfile(null);
       }
       setUser(currentUser);
       setLoading(false);
@@ -81,8 +99,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const isAdmin = profile?.role === 'admin';
+
   return (
-    <AuthContext.Provider value={{ user, loading, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, profile, loading, isAdmin, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
-  const { user, loginWithGoogle } = useAuth();
+  const { user, profile, isAdmin, loginWithGoogle } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 glass">
@@ -29,8 +29,13 @@ export default function Navbar() {
               <Upload className="w-4 h-4" />
               <span>নোট আপলোড</span>
             </Link>
-            <Link to="/admin" className="flex items-center space-x-1 hover:text-emerald-600 transition-colors">
-            </Link>
+            
+            {isAdmin && (
+              <Link to="/admin" className="flex items-center space-x-1 hover:text-emerald-600 transition-colors">
+                <ShieldCheck className="w-4 h-4" />
+                <span>অ্যাডমিন</span>
+              </Link>
+            )}
             
             {user ? (
               <Link to="/profile" className="flex items-center space-x-2 p-1.5 pr-4 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all group">
@@ -70,7 +75,9 @@ export default function Navbar() {
           <Link to="/" onClick={() => setIsOpen(false)} className="block py-2">হোম</Link>
           <Link to="/about" onClick={() => setIsOpen(false)} className="block py-2">আমাদের সম্পর্কে</Link>
           <Link to="/upload" onClick={() => setIsOpen(false)} className="block py-2">নোট আপলোড</Link>
-          {/* <Link to="/admin" onClick={() => setIsOpen(false)} className="block py-2">অ্যাডমিন প্যানেল</Link> */}
+          {isAdmin && (
+            <Link to="/admin" onClick={() => setIsOpen(false)} className="block py-2">অ্যাডমিন প্যানেল</Link>
+          )}
           {user ? (
             <Link to="/profile" onClick={() => setIsOpen(false)} className="block py-2 font-bold text-emerald-600">আমার প্রোফাইল</Link>
           ) : (

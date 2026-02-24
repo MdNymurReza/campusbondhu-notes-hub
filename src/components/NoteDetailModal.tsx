@@ -47,11 +47,24 @@ interface Comment {
 }
 
 export default function NoteDetailModal({ isOpen, onClose, note }: Props) {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [rating, setRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!window.confirm('আপনি কি নিশ্চিত যে আপনি এই নোটটি মুছে ফেলতে চান?')) return;
+    
+    try {
+      await deleteDoc(doc(db, 'notes', note.id));
+      onClose();
+      window.location.reload(); // Simple way to refresh the list
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      alert('নোটটি মুছতে সমস্যা হয়েছে।');
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -104,17 +117,6 @@ export default function NoteDetailModal({ isOpen, onClose, note }: Props) {
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm('আপনি কি এই নোট মুছে ফেলতে নিশ্চিত?')) return;
-    
-    try {
-      await deleteDoc(doc(db, 'notes', note.id));
-      onClose();
-    } catch (error) {
-      console.error("Error deleting note:", error);
-    }
-  };
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -145,7 +147,7 @@ export default function NoteDetailModal({ isOpen, onClose, note }: Props) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {user && user.uid === note.userId && (
+                {(isAdmin || (user && user.uid === note.userId)) && (
                   <button 
                     onClick={handleDelete}
                     className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all"
